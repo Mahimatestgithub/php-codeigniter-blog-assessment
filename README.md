@@ -60,7 +60,15 @@ This project is a basic blog application built using PHP, MySQL, HTML, CSS, Java
    - Open your browser and navigate to `http://localhost:8080` for the homepage.  
 
 ---
+6. **Screenshots of the Pages**
+- To help you better understand the design and layout, I have attached screenshots of all the pages included in the project:
 
+- Homepage: Shows the list of blog posts with the "Read More" link.
+
+- Blog Detail Page: Displays the full post and the comment section.
+
+- Admin Panel: Shows the list of blog posts with options to edit or delete them.
+---
 ## Instructions to Run the Project  
 
 1. Access the **Homepage** at `http://localhost:8080`.  
