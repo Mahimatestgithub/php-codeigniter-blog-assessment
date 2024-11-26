@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Blog Post</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">My Blog</a>
+            <a class="btn btn-outline-secondary" href="admin-panel.html">Admin Panel</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Edit Blog Post</h1>
+        <form id="edit-post-form">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" value="Existing Title" required>
+            </div>
+            <div class="mb-3">
+                <label for="author" class="form-label">Author</label>
+                <input type="text" class="form-control" id="author" value="Existing Author" required>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">Content</label>
+                <textarea class="form-control" id="content" rows="6" required>Existing blog content...</textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Update</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("edit-post-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            alert("Blog post updated! (Simulated backend processing)");
+        });
+    </script>
+</body>
+</html>

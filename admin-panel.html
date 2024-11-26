@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">My Blog</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Admin Panel</h1>
+        <button class="btn btn-primary mb-4" id="add-new-post-btn">Add New Blog Post</button>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="blog-list">
+                <!-- Dynamic content -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Adding New Blog -->
+    <div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPostModalLabel">Add New Blog Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-post-form">
+                        <div class="mb-3">
+                            <label for="add-title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="add-title" placeholder="Enter blog title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="add-author" class="form-label">Author</label>
+                            <input type="text" class="form-control" id="add-author" placeholder="Enter author name" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-post-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Blog -->
+    <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPostModalLabel">Edit Blog Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-post-form">
+                        <input type="hidden" id="edit-id">
+                        <div class="mb-3">
+                            <label for="edit-title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="edit-title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-author" class="form-label">Author</label>
+                            <input type="text" class="form-control" id="edit-author" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="update-post-btn">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let blogs = [
+            { id: 1, title: "First Blog Post", author: "Author 1", date: "2024-11-22" },
+            { id: 2, title: "Second Blog Post", author: "Author 2", date: "2024-11-21" }
+        ];
+
+        function renderBlogs() {
+            const blogList = document.getElementById("blog-list");
+            blogList.innerHTML = "";
+            blogs.forEach(blog => {
+                blogList.innerHTML += `
+                    <tr>
+                        <td>${blog.title}</td>
+                        <td>${blog.author}</td>
+                        <td>${blog.date}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm edit-btn" data-id="${blog.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${blog.id}">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Attach event listeners for Edit and Delete
+            document.querySelectorAll(".edit-btn").forEach(button => {
+                button.addEventListener("click", openEditModal);
+            });
+
+            document.querySelectorAll(".delete-btn").forEach(button => {
+                button.addEventListener("click", handleDelete);
+            });
+        }
+
+        function addNewPost(title, author) {
+            blogs.push({
+                id: blogs.length + 1,
+                title,
+                author,
+                date: new Date().toISOString().split("T")[0]
+            });
+            renderBlogs();
+        }
+
+        function openEditModal(event) {
+            const blogId = event.target.dataset.id;
+            const blog = blogs.find(b => b.id == blogId);
+            if (blog) {
+                document.getElementById("edit-id").value = blog.id;
+                document.getElementById("edit-title").value = blog.title;
+                document.getElementById("edit-author").value = blog.author;
+
+                const editModal = new bootstrap.Modal(document.getElementById("editPostModal"));
+                editModal.show();
+            }
+        }
+
+        function updatePost() {
+            const id = parseInt(document.getElementById("edit-id").value);
+            const title = document.getElementById("edit-title").value;
+            const author = document.getElementById("edit-author").value;
+
+            const blog = blogs.find(b => b.id === id);
+            if (blog) {
+                blog.title = title;
+                blog.author = author;
+                renderBlogs();
+                alert("Blog updated successfully!");
+            }
+        }
+
+        function handleDelete(event) {
+            const blogId = event.target.dataset.id;
+            if (confirm("Are you sure you want to delete this blog post?")) {
+                blogs = blogs.filter(blog => blog.id != blogId);
+                renderBlogs();
+            }
+        }
+
+        // Event Listeners
+        document.getElementById("save-post-btn").addEventListener("click", () => {
+            const title = document.getElementById("add-title").value;
+            const author = document.getElementById("add-author").value;
+            if (title && author) {
+                addNewPost(title, author);
+                document.getElementById("add-post-form").reset();
+                bootstrap.Modal.getInstance(document.getElementById("addPostModal")).hide();
+            }
+        });
+
+        document.getElementById("update-post-btn").addEventListener("click", () => {
+            updatePost();
+            bootstrap.Modal.getInstance(document.getElementById("editPostModal")).hide();
+        });
+
+        document.getElementById("add-new-post-btn").addEventListener("click", () => {
+            const addModal = new bootstrap.Modal(document.getElementById("addPostModal"));
+            addModal.show();
+        });
+
+        renderBlogs();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">My Blog</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Admin Panel</h1>
+        <a href="add-post.html" class="btn btn-primary mb-4">Add New Blog Post</a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="blog-list">
+                
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Mock data for admin panel
+        const blogs = [
+            { id: 1, title: "First Blog Post", author: "Author 1", date: "2024-11-22" },
+            { id: 2, title: "Second Blog Post", author: "Author 2", date: "2024-11-21" }
+        ];
+
+        const blogList = document.getElementById("blog-list");
+        blogs.forEach(blog => {
+            const row = `
+                <tr>
+                    <td>${blog.title}</td>
+                    <td>${blog.author}</td>
+                    <td>${blog.date}</td>
+                    <td>
+                        <a href="edit-post.html?id=${blog.id}" class="btn btn-warning btn-sm">Edit</a>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="${blog.id}">Delete</button>
+                    </td>
+                </tr>
+            `;
+            blogList.innerHTML += row;
+        });
+
+        // Simulate delete functionality
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", (e) => {
+                const blogId = e.target.dataset.id;
+                alert(`Blog with ID ${blogId} deleted! (Simulated backend processing)`);
+                e.target.closest("tr").remove();
+            });
+        });
+    </script>
+</body>
+</html> -->
